@@ -55,7 +55,7 @@ def read_info():
             name = user['name']
             s = get_session(user["cookies"])
             res = post_home_page(s)
-            log.info("post home page res: {}", res)
+            log.info("post home page res: {}".format(res))
             if "errors" not in res.keys():
                 manager.add_user(name, user["cookies"], s)
                 log.info(name + "添加session成功")
@@ -99,25 +99,25 @@ all_seat = [
 
 def go(name: str, s: requests.Session):
     # res = post_home_page(s)
-    # log.info("post home page res: {}", res)
+    # log.info("post home page res: {}".format(res))
     # often_seat = res['data']['userAuth']['oftenseat']["list"]
     often_seat = all_seat
     often_seat_key = []
     for seat in often_seat:
         often_seat_key.append([seat['seat_key'], seat['lib_id'], seat['info']])
-    log.info(often_seat_key)
+    log.info("ofter seats: {}".format(often_seat_key))
 
     for key in often_seat_key:
-        log.info("{}开始预约: {}", name, key)
+        log.info("{}开始预约: {}".format(name, key))
         res = book(s, key)
-        log.info("book result: {}", res)
+        log.info("book result: {}".format(res))
         status = res['data']['userAuth']['reserve']['reserveSeat']
         if status is not None and status:
-            log.info("{}预约成功: {}", name, key)
+            log.info("{}预约成功: {}".format(name, key))
             return
         else:
-            log.info("{}预约失败: {}", name, key)
-    log.info("{}一个也没约着……", name)
+            log.info("{}预约失败: {}".format(name, key))
+    log.info("{}一个也没约着……".format(name))
 
 
 def save_info():
@@ -130,7 +130,7 @@ def save_info():
 
 
 def job():
-    log.info("{}, 开抢！！！", time.ctime(time.time()))
+    log.info("{}, 开抢！！！".format(time.ctime(time.time())))
     for i in range(3):
         for user in manager.get_users():
             go(user.name, user.session)
@@ -149,7 +149,7 @@ def job_thread(threadName):
             for user in manager.get_users():
                 s = user.session
                 res = post_home_page(s)
-                log.info("post home page res: {}", res)
+                log.info("post home page res: {}".format(res))
                 if res.get('errors') and res.get('errors')[0].get('code') != 0:
                     log.info(res)
                     log.info("出现了error")
