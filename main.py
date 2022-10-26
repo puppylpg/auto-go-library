@@ -117,6 +117,8 @@ def go(name: str, s: requests.Session):
             return
         else:
             log.info("{}预约失败: {}".format(name, key))
+            # add a break
+            post_home_page(s)
     log.info("{}一个也没约着……".format(name))
 
 
@@ -149,7 +151,9 @@ def job_thread(threadName):
             for user in manager.get_users():
                 s = user.session
                 res = post_home_page(s)
-                log.info("post home page res: {}".format(res))
+                # 别一直打log
+                if random.randint(1, 10) == 5:
+                    log.info("post home page res: {}".format(res))
                 if res.get('errors') and res.get('errors')[0].get('code') != 0:
                     log.info(res)
                     log.info("出现了error")
