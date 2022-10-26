@@ -135,13 +135,24 @@ def job():
     log.info("{}, 开抢！！！".format(time.ctime(time.time())))
     for i in range(3):
         for user in manager.get_users():
-            go(user.name, user.session)
-            time.sleep(1)
+            try:
+                go(user.name, user.session)
+            except Exception as e:
+                log.error("Unknown error for job. Try again. Error string: {}".format(e))
+                job()
 
 
 def job_thread(threadName):
     schedule.every().day.at("07:00").do(job)
     schedule.every().day.at("22:35").do(job)
+    while True:
+        try:
+            job_thread_keep_alive()
+        except Exception as e:
+            log.error("Unknown error for job thread keep alive. Try again. Error string: {}".format(e))
+
+
+def job_thread_keep_alive():
     count_60 = 0
     while True:
         schedule.run_pending()
@@ -151,9 +162,7 @@ def job_thread(threadName):
             for user in manager.get_users():
                 s = user.session
                 res = post_home_page(s)
-                # 别一直打log
-                if random.randint(1, 10) == 5:
-                    log.info("post home page res: {}".format(res))
+                log.info("post home page res: {}".format(res))
                 if res.get('errors') and res.get('errors')[0].get('code') != 0:
                     log.info(res)
                     log.info("出现了error")
